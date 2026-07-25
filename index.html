@@ -82,7 +82,6 @@ function show_infobox() {
             right: 0;
         }
 
-        /* PERUBAHAN 2: Menyesuaikan body agar Full Black & Tanpa Scrollbar */
         html, body {
             font-family: arial;
             margin: 0;
@@ -93,36 +92,11 @@ function show_infobox() {
             overflow: hidden;
         }
 
-        .topright{
-           position:absolute;
-           top:0px;
-           right:0px;
-        }
-
-        .bottomright {
-            position:absolute;
-            top: 40%;
-            right: 0px;
-        }
-
-        .center {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .trinfo{
-           position: relative;
-           right: 0px;
-           border: 1px solid black;
-        }
-
-        .framed{
-           position: relative;
-           top: 150px;
-           right: 10px;
-           border: 1px solid black;
-        }
+        .topright{ position:absolute; top:0px; right:0px; }
+        .bottomright { position:absolute; top: 40%; right: 0px; }
+        .center { display: flex; align-items: center; justify-content: center; }
+        .trinfo{ position: relative; right: 0px; border: 1px solid black; }
+        .framed{ position: relative; top: 150px; right: 10px; border: 1px solid black; }
     </style>
 
     <script src="https://pygame-web.github.io/cdn/0.9.3//browserfs.min.js"></script>
