@@ -1,120 +1,86 @@
-<html lang="en-us"><script src="https://pygame-web.github.io/cdn/0.9.3/pythons.js" type=module id="site" data-python="python3.12" data-LINES=42 data-COLUMNS=132 data-os="vtx,snd,gui" async defer>#</script><head>
-
-<script type="application/javascript">
-// 2. Hilangkan pembatas Aspect Ratio (fb_ar, fb_width, fb_height) agar canvas bebas membesar
-config = {
-    xtermjs : "1" ,
-    _sdl2 : "canvas",
-    user_canvas : 0,
-    user_canvas_managed : 0,
-    gui_divider : 2,
-    ume_block : 1,
-    can_close : 0,
-    archive : "llo",
-    gui_debug : 2,
-    cdn : "https://pygame-web.github.io/cdn/0.9.3/",
-    autorun : 0,
-    PYBUILD : "3.12"
-}
-
-function show_infobox() {
-    infobox.style.display = "block";
-    const w = infobox.offsetWidth;
-    const h = infobox.offsetHeight;
-    const left = (window.innerWidth - w) / 2;
-    const top = (window.innerHeight - h) / 2;
-    infobox.style.left = left + "px";
-    infobox.style.top = top + "px";
-}
-</script>
-
-    <title>Love Heart</title>
+<!DOCTYPE html>
+<html lang="id">
+<head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-
-    <link rel="icon" type="image/png" href="favicon.png" sizes="16x16">
-
+    <title>Heart - I Love You</title>
     <style>
-        #status {
-            display: inline-block;
-            vertical-align: top;
-            margin-top: 20px;
-            margin-left: 30px;
-            font-weight: bold;
-            color: rgb(120, 120, 120);
-        }
-
-        #progress {
-            height: 20px;
-            width: 300px;
-        }
-
-        #infobox {
-            position: fixed;
-            background: #ea80b0;
-            color: #ffffff;
-            font-weight: bold;
-            padding: 14px 28px;
-            border-radius: 20px;
-            z-index: 999999;
-            box-shadow: 0 4px 15px rgba(234, 128, 176, 0.4);
-            cursor: pointer;
-        }
-
-        div.emscripten { text-align: center; }
-
-        /* 3. Paksa Canvas Memenuhi Seluruh Layar tanpa Margin */
-        canvas.emscripten {
-            border: 0px none !important;
-            background-color: #000000 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: 5;
-            padding: 0 !important;
-            margin: 0 !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-        }
-
-        /* 4. Paksa Seluruh Body Web Berwarna Hitam Pekat */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
-            font-family: arial;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+            width: 100%; height: 100%;
             background-color: #000000 !important;
-            overflow: hidden !important;
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
         }
+        canvas { display: block; width: 100vw; height: 100vh; }
     </style>
-
-    <script src="https://pygame-web.github.io/cdn/0.9.3//browserfs.min.js"></script>
 </head>
-
 <body>
-    <div id="transfer" align=center style="display:none;">
-        <div class="emscripten" id="status">Downloading...</div>
-        <div class="emscripten">
-            <progress value="0" max="100" id="progress"></progress>
-        </div>
-    </div>
+    <canvas id="heartCanvas"></canvas>
 
-    <canvas class="emscripten" id="canvas" width="100vw" height="100vh" oncontextmenu="event.preventDefault()" tabindex=1></canvas>
-    <canvas class="emscripten" id="canvas3d" width="100vw" height="100vh" oncontextmenu="event.preventDefault()" tabindex=1 hidden></canvas>
+    <script>
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, timeShift = 0;
+        
+        const SPEED = 0.005;
+        const NUM_ITEMS = 65;
 
-    <div id="infobox">Loading, please wait ...</div>
-    <div id="html"></div>
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width * window.devicePixelRatio;
+            canvas.height = height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
 
-    <script type="application/javascript">
-    async function custom_onload(debug_hidden) {
-        show_infobox();
-    }
-    function custom_prerun(){}
-    function custom_postrun(){}
+        window.addEventListener('resize', resize);
+        resize();
+
+        function getHeartPos(t) {
+            const x = 16 * Math.pow(Math.sin(t), 3);
+            const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+            return { x, y };
+        }
+
+        function animate() {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, width, height);
+            timeShift += SPEED;
+
+            const scale = Math.min(width, height) / 45;
+            const fontSize = Math.max(12, Math.floor(scale * 1.1));
+
+            ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let i = 0; i < NUM_ITEMS; i++) {
+                const t = (i / NUM_ITEMS) * 2 * Math.PI + timeShift;
+                const pos = getHeartPos(t);
+                const posNext = getHeartPos(t + 0.01);
+
+                const dx = posNext.x - pos.x;
+                const dy = posNext.y - pos.y;
+                const angle = Math.atan2(dy, dx) - (30 * Math.PI / 180);
+
+                const screenX = width / 2 + pos.x * scale;
+                const screenY = height / 2 + pos.y * scale;
+
+                ctx.save();
+                ctx.translate(screenX, screenY);
+                ctx.rotate(angle);
+
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 8;
+                ctx.fillStyle = '#ea80b0';
+
+                ctx.fillText('I love you', 0, 0);
+                ctx.restore();
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
     </script>
 </body>
 </html>
