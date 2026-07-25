@@ -36,7 +36,8 @@ def get_heart_pos(t):
 
 
 async def main():
-  global WIDTH, HEIGHT
+  # PENTING: Tambahkan 'screen' di variabel global
+  global WIDTH, HEIGHT, screen
   running = True
   time_shift = 0.0
 
@@ -44,7 +45,6 @@ async def main():
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         running = False
-      # Deteksi jika layar di-resize/berubah orientasi di HP/PC
       elif event.type == pygame.VIDEORESIZE:
         WIDTH, HEIGHT = event.w, event.h
         screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
@@ -52,7 +52,7 @@ async def main():
     screen.fill(BG_COLOR)
     time_shift += SPEED
 
-    # Hitung skala proporsional agar bentuk hati pas di berbagai ukuran layar
+    # Skala otomatis menyesuaikan layar device
     scale = min(WIDTH, HEIGHT) / 45
 
     for i in range(NUM_ITEMS):
@@ -82,8 +82,11 @@ async def main():
 
     pygame.display.flip()
     clock.tick(60)
+
+    # WAJIB untuk WebAssembly/Pygbag
     await asyncio.sleep(0)
 
   pygame.quit()
+
 
 asyncio.run(main())
