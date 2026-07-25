@@ -1,28 +1,29 @@
-import asyncio  # 1. Import asyncio di paling atas
+import asyncio
 import math
 import pygame
 
-# 2. Inisialisasi Pygame & Konfigurasi
+# 1. Inisialisasi Pygame dengan mode RESIZABLE
 pygame.init()
-WIDTH, HEIGHT = 700, 700
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+# Ambil resolusi layar device saat ini
+info = pygame.display.Info()
+WIDTH = info.current_w if info.current_w > 0 else 700
+HEIGHT = info.current_h if info.current_h > 0 else 700
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Heart - I Love You")
 clock = pygame.time.Clock()
 
-# Pengatur Kecepatan & Ukuran
 SPEED = 0.005
-NUM_ITEMS = 50  # Jumlah teks 'I love you'
+NUM_ITEMS = 60
 
-# Warna
 PINK = (234, 128, 176)
 WHITE = (255, 255, 255)
 BG_COLOR = (0, 0, 0)
 
-# Font Default
-font = pygame.font.Font(None, 30)
+font = pygame.font.Font(None, 28)
 
 
-# Rumus Matematika Hati
 def get_heart_pos(t):
   x = 16 * (math.sin(t) ** 3)
   y = -(
@@ -34,8 +35,8 @@ def get_heart_pos(t):
   return x, y
 
 
-# 3. Seluruh Game Loop Dimasukkan ke Dalam Fungsi Async
 async def main():
+  global WIDTH, HEIGHT
   running = True
   time_shift = 0.0
 
@@ -43,9 +44,16 @@ async def main():
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         running = False
+      # Deteksi jika layar di-resize/berubah orientasi di HP/PC
+      elif event.type == pygame.VIDEORESIZE:
+        WIDTH, HEIGHT = event.w, event.h
+        screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 
     screen.fill(BG_COLOR)
     time_shift += SPEED
+
+    # Hitung skala proporsional agar bentuk hati pas di berbagai ukuran layar
+    scale = min(WIDTH, HEIGHT) / 45
 
     for i in range(NUM_ITEMS):
       t = (i / NUM_ITEMS) * 2 * math.pi + time_shift
@@ -53,17 +61,13 @@ async def main():
       x, y = get_heart_pos(t)
       x_next, y_next = get_heart_pos(t + 0.01)
 
-      # Hitung Sudut Kemiringan Teks
       dx = x_next - x
       dy = y_next - y
       angle = math.degrees(math.atan2(-dy, dx)) - 30
 
-      # Skala Ukuran Hati (scale = 14)
-      scale = 14
       screen_x = int(WIDTH / 2 + x * scale)
       screen_y = int(HEIGHT / 2 + y * scale)
 
-      # Render Teks & Glow
       text_surf = font.render("I love you", True, PINK)
       rotated_surf = pygame.transform.rotate(text_surf, angle)
 
@@ -78,12 +82,8 @@ async def main():
 
     pygame.display.flip()
     clock.tick(60)
-
-    # WAJIB untuk Pygbag/Browser:
     await asyncio.sleep(0)
 
   pygame.quit()
 
-
-# 4. Jalankan Fungsi Utama
 asyncio.run(main())
